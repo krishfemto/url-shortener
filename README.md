@@ -14,6 +14,8 @@ working mostly with frontend/AWS projects before.
 
 ## How it works
 
+![Architecture Diagram](architecture-diagram.png)
+
 1. Paste a URL into the form on the homepage
 2. The app generates a random 7-character code (e.g. `Gl7fr6Q`) and saves the
    mapping in a database
