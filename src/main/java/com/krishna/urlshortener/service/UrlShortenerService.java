@@ -1,5 +1,6 @@
 package com.krishna.urlshortener.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import com.krishna.urlshortener.entity.UrlMapping;
 import com.krishna.urlshortener.exception.UrlNotFoundException;
 import com.krishna.urlshortener.repository.UrlMappingRepository;
@@ -70,10 +71,11 @@ public class UrlShortenerService {
      * Resolves a short code to its original URL.
      * Checks the in-memory cache first, falls back to the database.
      */
-    public String resolveUrl(String shortCode) {
+   @Transactional
+public String resolveUrl(String shortCode) {
         String cached = cache.get(shortCode);
         if (cached != null) {
-            incrementClickAsync(shortCode);
+            incrementClick(shortCode);
             return cached;
         }
 
@@ -81,7 +83,7 @@ public class UrlShortenerService {
                 .orElseThrow(() -> new UrlNotFoundException(shortCode));
 
         cache.put(shortCode, mapping.getOriginalUrl());
-        incrementClickAsync(shortCode);
+       incrementClick(shortCode);
         return mapping.getOriginalUrl();
     }
 
@@ -89,10 +91,9 @@ public class UrlShortenerService {
      * Updates the click count on a background thread so redirects
      * aren't slowed down waiting for a database write.
      */
-    @Async
-    public void incrementClickAsync(String shortCode) {
-        repository.incrementClickCount(shortCode);
-    }
+public void incrementClick(String shortCode) {
+    repository.incrementClickCount(shortCode);
+}
 
     /**
      * Returns the most recently created links, for display on the homepage.
